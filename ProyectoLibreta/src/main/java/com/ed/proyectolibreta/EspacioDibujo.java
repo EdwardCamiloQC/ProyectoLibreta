@@ -1,8 +1,10 @@
 package com.ed.proyectolibreta;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,10 +15,6 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
     
     private String nombreApunte;
     private int ancho, alto, coordenadaX1, coordenadaY1, coordenadaX2, coordenadaY2, indice;
-    private int diferenciaX, diferenciaY;
-    private float pendiente;
-    private int aumentoX, aumentoY;
-    private char n;
     public final boolean horizontal = false;
     public final boolean vertical = true;
     ArrayList <Trazos> lineas;
@@ -39,13 +37,13 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
         coordenadaY1 = 0;
         coordenadaX2 = 0;
         coordenadaY2 = 0;
-        n = 1;
         addMouseMotionListener(this);
         addMouseListener(this);
     }
     
     @Override
     public void paintComponent(Graphics g){
+        Graphics2D graficos = (Graphics2D) g;
         super.paintComponent(g);
         g.setColor(Color.BLACK);
         for(int i = 0; i <= ancho; i = i + 15){
@@ -56,10 +54,12 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
         }
         
         for(int i = 0; i < lineas.size(); i++){
-            g.setColor(lineas.get(i).getColorTrazo());
-            g.drawLine(lineas.get(i).getX1(), lineas.get(i).getY1(), lineas.get(i).getX2(), lineas.get(i).getY2());
+            graficos.setColor(lineas.get(i).getColorTrazo());
+            graficos.setStroke(new BasicStroke(lineas.get(i).getGrosor()));
+            graficos.drawLine(lineas.get(i).getX1(), lineas.get(i).getY1(), lineas.get(i).getX2(), lineas.get(i).getY2());
         }
         
+        graficos.setStroke(new BasicStroke(1));
         g.setColor(Color.BLACK);
         for(int i = 0; i <= ancho; i = i + 15){
             g.drawLine(i, 0, i, alto);
@@ -74,101 +74,10 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
         coordenadaX2 = e.getX();
         coordenadaY2 = e.getY();
         
-        diferenciaX = Math.abs(coordenadaX1 - coordenadaX2);
-        diferenciaY = Math.abs(coordenadaY1 - coordenadaY2);
-        try{
-            diferenciaX /= maximoComunDivisor(diferenciaY, diferenciaX);
-            diferenciaY /= maximoComunDivisor(diferenciaY, diferenciaX);
-        }catch(Exception ex){
-            diferenciaX = 0;
-            diferenciaY = 1;
-        }
-        
-        try{
-            pendiente = coordenadaY2 - coordenadaY1 / coordenadaX2 - coordenadaX1;
-        }catch(Exception ex){}
-        
         if(MarcoTrabajo.flagEscribir){
-            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte));
-            if(pendiente >= 0){
-                while(n <= MarcoTrabajo.tamañoTrazo){
-                    for(int i = 0; i <= diferenciaY; i++){
-                        coordenadaX1 -= i;
-                        coordenadaX2 -= i;
-                        for(int j = 0; j <= diferenciaX; j++){
-                            coordenadaY1 += j;
-                            coordenadaY2 += j;
-                            if(n <= MarcoTrabajo.tamañoTrazo){
-                                lineas.add(new Trazos(coordenadaX1, coordenadaY1, coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte));
-                                n++;
-                            }else{
-                                j = diferenciaX + 1;
-                                i = diferenciaY + 1;
-                            }
-                        }
-                    }
-                }
-                n = 1;
-            }else if(pendiente < 0){
-                while(n <= MarcoTrabajo.tamañoTrazo){
-                    for(int i = 0; i <= diferenciaY; i++){
-                        coordenadaX1 += i;
-                        coordenadaX2 += i;
-                        for(int j = 0; j <= diferenciaX; j++){
-                            coordenadaY1 += j;
-                            coordenadaY2 += j;
-                            if(n <= MarcoTrabajo.tamañoTrazo){
-                                lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte));
-                                n++;
-                            }else{
-                                j = diferenciaX + 1;
-                                i = diferenciaY + 1;
-                            }
-                        }
-                    }
-                }
-                n = 1;
-            }
+            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
         }else{
-            if(pendiente >= 0){
-                while(n <= MarcoTrabajo.tamañoTrazo){
-                    for(int i = 0; i <= diferenciaY; i++){
-                        coordenadaX1 -= i;
-                        coordenadaX2 -= i;
-                        for(int j = 0; j <= diferenciaX; j++){
-                            coordenadaY1 += j;
-                            coordenadaY2 += j;
-                            if(n <= MarcoTrabajo.tamañoTrazo){
-                                lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, Color.WHITE));
-                                n++;
-                            }else{
-                                j = diferenciaX + 1;
-                                i = diferenciaY + 1;
-                            }
-                        }
-                    }
-                }
-                n = 1;
-            }else if(pendiente < 0){
-                while(n <= MarcoTrabajo.tamañoTrazo){
-                    for(int i = 0; i <= diferenciaY; i++){
-                        coordenadaX1 += i;
-                        coordenadaX2 += i;
-                        for(int j = 0; j <= diferenciaX; j++){
-                            coordenadaY1 += j;
-                            coordenadaY2 += j;
-                            if(n <= MarcoTrabajo.tamañoTrazo){
-                                lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, Color.WHITE));
-                                n++;
-                            }else{
-                                j = diferenciaX + 1;
-                                i = diferenciaY + 1;
-                            }
-                        }
-                    }
-                }
-                n = 1;
-            }
+            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, Color.WHITE, MarcoTrabajo.tamañoTrazo));
         }
         coordenadaX1 = e.getX();
         coordenadaY1 = e.getY();
@@ -217,26 +126,5 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
     public int getIndice(){
         return indice;
     }
-    
-    private int maximoComunDivisor(int numerador, int denominador){
-        int residuo;
-        if(0 != numerador % 2){
-            numerador += 1;
-        }
-        if(0 != denominador % 2){
-            denominador += 1;
-        }
-        do{
-            try{
-                residuo = numerador % denominador;
-            }catch(Exception ex){
-                residuo = 0;            //esta línea no cumple una función más que dar un valor igual a cero a residuo
-            }
-            if(residuo != 0){
-                numerador = denominador;
-                denominador = residuo;
-            }
-        }while(residuo != 0);
-        return denominador;
-    }
+      
 }
