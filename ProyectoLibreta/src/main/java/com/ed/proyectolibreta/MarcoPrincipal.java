@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -51,6 +53,14 @@ public class MarcoPrincipal extends JFrame {
         
         panelEntrada.setLayout(new GridLayout(3, 1));
         panelData.setLayout(new FlowLayout());
+        Image image;
+        try{
+            image = new ImageIcon("Imagenes/anotaciones1.jpg").getImage();
+        }catch(Exception ex){
+            image = null;
+            System.out.println("falló la imagen");
+        }
+        panelData.setImagenFondo(image);
         
         botonNuevoApunte = new JButton("Trazar");
         botonAbrirApunte = new JButton("Abrir");

@@ -19,7 +19,7 @@ public class MarcoTrabajo extends JFrame{
     Toolkit toolkit;
     Dimension tamañoPantalla;
     short alto, ancho;
-    String valorGrosorTrazo;
+    String valorGrosorTrazo, modoEscribirBorrar;
     static boolean flagEscribir;
     static short tamañoTrazo;
     static Color colorApunte;
@@ -40,10 +40,8 @@ public class MarcoTrabajo extends JFrame{
     JButton botonHojaSiguiente;
     JButton botonEliminarHoja;
     JButton botonCrearHoja;
-    JButton botonColorNegro;
-    JButton botonColorRojo;
-    JButton botonEscribir;
-    JButton botonBorrar;
+    JButton botonColor;
+    JButton botonEscribirBorrar;
     JButton botonAumentarTrazo;
     JButton botonDisminuirTrazo;
     
@@ -99,12 +97,12 @@ public class MarcoTrabajo extends JFrame{
         botonCrearHoja = new JButton("Nueva");
         botonAumentarTrazo = new JButton("▬");
         botonDisminuirTrazo = new JButton("–");
-        botonColorNegro = new JButton("Negro");
-        botonColorNegro.setBackground(Color.BLACK);
-        botonColorRojo = new JButton("Rojo");
-        botonColorRojo.setBackground(Color.RED);
-        botonEscribir = new JButton("Escribir");
-        botonBorrar = new JButton("Borrar");
+        botonColor = new JButton("Color");
+        botonColor.setBackground(colorApunte);
+        if(flagEscribir){
+            modoEscribirBorrar = "Borrar";
+        }else modoEscribirBorrar = "Escribir";
+        botonEscribirBorrar = new JButton(modoEscribirBorrar);
         botonRenombrarApunte = new JButton("Renombrar");
         botonGuardarApunte = new JButton("Guargar");
         
@@ -171,31 +169,27 @@ public class MarcoTrabajo extends JFrame{
             }
         });
         
-        botonColorNegro.addActionListener(new ActionListener(){
+        botonColor.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                colorApunte = Color.BLACK;
+                if(colorApunte == Color.BLACK){
+                    colorApunte = Color.RED;
+                    botonColor.setBackground(colorApunte);
+                }else if(colorApunte == Color.RED){
+                    colorApunte = Color.BLACK;
+                    botonColor.setBackground(colorApunte);
+                }
             }
         });
         
-        botonColorRojo.addActionListener(new ActionListener(){
+        botonEscribirBorrar.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                colorApunte = Color.RED;
-            }
-        });
-        
-        botonEscribir.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent evento){
-                flagEscribir = true;
-            }
-        });
-        
-        botonBorrar.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent evento){
-                flagEscribir = false;
+                flagEscribir = !flagEscribir;
+                if(flagEscribir){
+                    modoEscribirBorrar = "Borrar";
+                }else modoEscribirBorrar = "Escribir";
+                botonEscribirBorrar.setText(modoEscribirBorrar);
             }
         });
         
@@ -234,10 +228,8 @@ public class MarcoTrabajo extends JFrame{
         panelOpciones.add(botonCrearHoja);
         panelOpciones.add(botonAumentarTrazo);
         panelOpciones.add(botonDisminuirTrazo);
-        panelOpciones.add(botonColorNegro);
-        panelOpciones.add(botonColorRojo);
-        panelOpciones.add(botonEscribir);
-        panelOpciones.add(botonBorrar);
+        panelOpciones.add(botonColor);
+        panelOpciones.add(botonEscribirBorrar);
         panelGuardado.add(botonRenombrarApunte);
         panelGuardado.add(botonGuardarApunte);
     }
