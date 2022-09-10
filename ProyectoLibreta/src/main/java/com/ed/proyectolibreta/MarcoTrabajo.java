@@ -16,10 +16,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 public class MarcoTrabajo extends JFrame{
+    InformeDeApunte hacerIntro;
+    private static char tipoDeTrazo;
     Toolkit toolkit;
     Dimension tamañoPantalla;
     short alto, ancho;
-    String valorGrosorTrazo;
+    String valorGrosorTrazo, modoEscribirBorrar;
     static boolean flagEscribir;
     static short tamañoTrazo;
     static Color colorApunte;
@@ -40,12 +42,13 @@ public class MarcoTrabajo extends JFrame{
     JButton botonHojaSiguiente;
     JButton botonEliminarHoja;
     JButton botonCrearHoja;
-    JButton botonColorNegro;
-    JButton botonColorRojo;
-    JButton botonEscribir;
-    JButton botonBorrar;
+    JButton botonColor;
+    JButton botonEscribirBorrar;
     JButton botonAumentarTrazo;
     JButton botonDisminuirTrazo;
+    JButton botonTrazarLinea;
+    JButton botonTrazarCuadro;
+    JButton botonTrazarCirculo;
     
     JButton botonRenombrarApunte;
     JButton botonGuardarApunte;
@@ -73,11 +76,12 @@ public class MarcoTrabajo extends JFrame{
         valorGrosorTrazo = String.valueOf(tamañoTrazo);
         colorApunte = Color.BLACK;
         indicePagina = 1;
+        this.tipoDeTrazo = 'T';                                                 // T:trazo libre, L:trazo linea
         
-        panelRegresar = new PanelControl(0, 0, ancho / 8, alto * 3/ 16, Color.GRAY);
-        panelOpciones = new PanelControl(0, alto / 4, ancho / 8, alto / 4, Color.GRAY);
-        panelColor = new PanelControl(0, alto * 9 / 16, ancho / 8, alto / 4, Color.GRAY);
-        panelGuardado = new PanelControl(0, alto * 7 / 8, ancho / 8, alto / 8, Color.GRAY);
+        panelRegresar = new PanelControl(0, 0, ancho / 8, alto * 3/ 16, MarcoPrincipal.colorFondos);
+        panelOpciones = new PanelControl(0, alto / 4, ancho / 8, alto / 4, MarcoPrincipal.colorFondos);
+        panelColor = new PanelControl(0, alto * 9 / 16, ancho / 8, alto / 4, MarcoPrincipal.colorFondos);
+        panelGuardado = new PanelControl(0, alto * 7 / 8, ancho / 8, alto / 8, MarcoPrincipal.colorFondos);
         hojas = new JTabbedPane(1);
         hojas.setBounds(ancho / 8, 0, ancho - ancho / 8, alto);
         paginas = new ArrayList <>();
@@ -85,28 +89,62 @@ public class MarcoTrabajo extends JFrame{
         hojas.add(paginas.get(indicePagina - 1).getNombre() + "[" + String.valueOf(indicePagina) + "]", paginas.get(0));
         
         panelRegresar.setLayout(new GridLayout(4, 1));
-        panelOpciones.setLayout(new GridLayout(5, 2));
+        panelOpciones.setLayout(new GridLayout(6, 2));
         panelColor.setLayout(new FlowLayout(FlowLayout.CENTER));
         panelGuardado.setLayout(new GridLayout(2, 1));
         
         botonInicio = new JButton("Inicio");
+        botonInicio.setBackground(MarcoPrincipal.colorBotones);
+        botonInicio.setFont(MarcoPrincipal.tamanoLetra);
         titulo = new JLabel("Materia: " + MarcoPrincipal.nombre);
+        titulo.setFont(MarcoPrincipal.tamanoLetra);
         numeroGrosor = new JLabel("Grosor: " + valorGrosorTrazo);
+        numeroGrosor.setFont(MarcoPrincipal.tamanoLetra);
         numeroPagina = new JLabel("Página: " + String.valueOf(indicePagina));
+        numeroPagina.setFont(MarcoPrincipal.tamanoLetra);
         botonHojaAnterior = new JButton("◄");
+        botonHojaAnterior.setBackground(MarcoPrincipal.colorBotones);
+        botonHojaAnterior.setFont(MarcoPrincipal.tamanoLetra);
         botonHojaSiguiente = new JButton("►");
+        botonHojaSiguiente.setBackground(MarcoPrincipal.colorBotones);
+        botonHojaSiguiente.setFont(MarcoPrincipal.tamanoLetra);
         botonEliminarHoja = new JButton("Eliminar");
+        botonEliminarHoja.setBackground(MarcoPrincipal.colorBotones);
+        botonEliminarHoja.setFont(MarcoPrincipal.tamanoLetra);
         botonCrearHoja = new JButton("Nueva");
+        botonCrearHoja.setBackground(MarcoPrincipal.colorBotones);
+        botonCrearHoja.setFont(MarcoPrincipal.tamanoLetra);
         botonAumentarTrazo = new JButton("▬");
+        botonAumentarTrazo.setBackground(MarcoPrincipal.colorBotones);
+        botonAumentarTrazo.setFont(MarcoPrincipal.tamanoLetra);
         botonDisminuirTrazo = new JButton("–");
-        botonColorNegro = new JButton("Negro");
-        botonColorNegro.setBackground(Color.BLACK);
-        botonColorRojo = new JButton("Rojo");
-        botonColorRojo.setBackground(Color.RED);
-        botonEscribir = new JButton("Escribir");
-        botonBorrar = new JButton("Borrar");
+        botonDisminuirTrazo.setBackground(MarcoPrincipal.colorBotones);
+        botonDisminuirTrazo.setFont(MarcoPrincipal.tamanoLetra);
+        botonColor = new JButton("Color");
+        botonColor.setBackground(colorApunte);
+        botonColor.setFont(MarcoPrincipal.tamanoLetra);
+        botonTrazarLinea = new JButton("/");
+        botonTrazarLinea.setBackground(MarcoPrincipal.colorBotones);
+        botonTrazarLinea.setFont(MarcoPrincipal.tamanoLetra);
+        botonTrazarCuadro = new JButton("□");
+        botonTrazarCuadro.setBackground(MarcoPrincipal.colorBotones);
+        botonTrazarCuadro.setFont(MarcoPrincipal.tamanoLetra);
+        botonTrazarCirculo = new JButton("○");
+        botonTrazarCirculo.setBackground(MarcoPrincipal.colorBotones);
+        botonTrazarCirculo.setFont(MarcoPrincipal.tamanoLetra);
+        
+        if(flagEscribir){
+            modoEscribirBorrar = "Borrar";
+        }else modoEscribirBorrar = "Escribir";
+        botonEscribirBorrar = new JButton(modoEscribirBorrar);
+        botonEscribirBorrar.setBackground(MarcoPrincipal.colorBotones);
+        botonEscribirBorrar.setFont(MarcoPrincipal.tamanoLetra);
         botonRenombrarApunte = new JButton("Renombrar");
+        botonRenombrarApunte.setBackground(MarcoPrincipal.colorBotones);
+        botonRenombrarApunte.setFont(MarcoPrincipal.tamanoLetra);
         botonGuardarApunte = new JButton("Guargar");
+        botonGuardarApunte.setBackground(MarcoPrincipal.colorBotones);
+        botonGuardarApunte.setFont(MarcoPrincipal.tamanoLetra);
         
         botonInicio.addActionListener(new ActionListener(){
             @Override
@@ -171,38 +209,60 @@ public class MarcoTrabajo extends JFrame{
             }
         });
         
-        botonColorNegro.addActionListener(new ActionListener(){
+        botonColor.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                colorApunte = Color.BLACK;
+                if(colorApunte == Color.BLACK){
+                    colorApunte = Color.RED;
+                    botonColor.setBackground(colorApunte);
+                }else if(colorApunte == Color.RED || colorApunte!= Color.BLACK){
+                    colorApunte = Color.BLACK;
+                    botonColor.setBackground(colorApunte);
+                }
             }
         });
         
-        botonColorRojo.addActionListener(new ActionListener(){
+        botonEscribirBorrar.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                colorApunte = Color.RED;
+                tipoDeTrazo = 'T';
+                flagEscribir = !flagEscribir;
+                if(flagEscribir){
+                    modoEscribirBorrar = "Borrar";
+                }else modoEscribirBorrar = "Escribir";
+                botonEscribirBorrar.setText(modoEscribirBorrar);
             }
         });
         
-        botonEscribir.addActionListener(new ActionListener(){
+        botonTrazarLinea.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                flagEscribir = true;
+                tipoDeTrazo = 'L';
+                modoEscribirBorrar = "Borrar";
+                botonEscribirBorrar.setText(modoEscribirBorrar);
             }
         });
         
-        botonBorrar.addActionListener(new ActionListener(){
+        botonTrazarCuadro.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                flagEscribir = false;
+                tipoDeTrazo = 'C';
+                modoEscribirBorrar = "Borrar";
+                botonEscribirBorrar.setText(modoEscribirBorrar);
+            }
+        });
+        
+        botonTrazarCirculo.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent evento){
+                
             }
         });
         
         botonRenombrarApunte.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                MarcoPrincipal.nombre = JOptionPane.showInputDialog("Renombra el Apunte");
+                MarcoPrincipal.nombre = JOptionPane.showInputDialog("Renombra el Apunte").toUpperCase();
                 titulo.setText("Materia: " + MarcoPrincipal.nombre);
                 for(short i = 0; i < paginas.size(); i++){
                     paginas.get(i).setNombre(MarcoPrincipal.nombre);
@@ -214,7 +274,8 @@ public class MarcoTrabajo extends JFrame{
         botonGuardarApunte.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent evento){
-                
+                hacerIntro = new InformeDeApunte(ancho,alto);
+                hacerIntro.setVisible(true);
             }
         });
         
@@ -234,16 +295,21 @@ public class MarcoTrabajo extends JFrame{
         panelOpciones.add(botonCrearHoja);
         panelOpciones.add(botonAumentarTrazo);
         panelOpciones.add(botonDisminuirTrazo);
-        panelOpciones.add(botonColorNegro);
-        panelOpciones.add(botonColorRojo);
-        panelOpciones.add(botonEscribir);
-        panelOpciones.add(botonBorrar);
+        panelOpciones.add(botonColor);
+        panelOpciones.add(botonEscribirBorrar);
+        panelOpciones.add(botonTrazarLinea);
+        panelOpciones.add(botonTrazarCuadro);
+        panelOpciones.add(botonTrazarCirculo);
         panelGuardado.add(botonRenombrarApunte);
         panelGuardado.add(botonGuardarApunte);
     }
     
     public void btnMarcoTrabajoPerformed(ActionEvent e){
         this.dispose();
+    }
+    
+    public static char getTipoDeTrazo(){
+        return tipoDeTrazo;
     }
     
 }

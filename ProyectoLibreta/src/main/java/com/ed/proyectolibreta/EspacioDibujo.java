@@ -46,10 +46,10 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
         Graphics2D graficos = (Graphics2D) g;
         super.paintComponent(g);
         g.setColor(Color.BLACK);
-        for(int i = 0; i <= ancho; i = i + 15){
+        for(int i = 0; i <= ancho; i = i + 30){
             g.drawLine(i, 0, i, alto);
         }
-        for(int i = 0; i <= alto; i = i + 15){
+        for(int i = 0; i <= alto; i = i + 30){
             g.drawLine(0, i, ancho, i);
         }
         
@@ -61,27 +61,29 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
         
         graficos.setStroke(new BasicStroke(1));
         g.setColor(Color.BLACK);
-        for(int i = 0; i <= ancho; i = i + 15){
+        for(int i = 0; i <= ancho; i = i + 30){
             g.drawLine(i, 0, i, alto);
         }
-        for(int i = 0; i <= alto; i = i + 15){
+        for(int i = 0; i <= alto; i = i + 30){
             g.drawLine(0, i, ancho, i);
         }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        coordenadaX2 = e.getX();
-        coordenadaY2 = e.getY();
-        
-        if(MarcoTrabajo.flagEscribir){
-            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
-        }else{
-            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, Color.WHITE, MarcoTrabajo.tamañoTrazo));
+        if('T' == MarcoTrabajo.getTipoDeTrazo()){
+            coordenadaX2 = e.getX();
+            coordenadaY2 = e.getY();
+
+            if(MarcoTrabajo.flagEscribir){
+                lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            }else{
+                lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, Color.WHITE, MarcoTrabajo.tamañoTrazo));
+            }
+            coordenadaX1 = e.getX();
+            coordenadaY1 = e.getY();
+            repaint();
         }
-        coordenadaX1 = e.getX();
-        coordenadaY1 = e.getY();
-        repaint();
     }
 
     @Override
@@ -102,7 +104,20 @@ class EspacioDibujo extends JPanel implements MouseListener, MouseMotionListener
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        
+        if('L' == MarcoTrabajo.getTipoDeTrazo()){
+            coordenadaX2 = e.getX();
+            coordenadaY2 = e.getY();
+            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            repaint();
+        }else if('C' == MarcoTrabajo.getTipoDeTrazo()){
+            coordenadaX2 = e.getX();
+            coordenadaY2 = e.getY();
+            lineas.add(new Trazos(coordenadaX1, coordenadaY1,coordenadaX2, coordenadaY1, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            lineas.add(new Trazos(coordenadaX2, coordenadaY1,coordenadaX2, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            lineas.add(new Trazos(coordenadaX2, coordenadaY2,coordenadaX1, coordenadaY2, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            lineas.add(new Trazos(coordenadaX1, coordenadaY2,coordenadaX1, coordenadaY1, MarcoTrabajo.colorApunte, MarcoTrabajo.tamañoTrazo));
+            repaint();
+        }
     }
 
     @Override
